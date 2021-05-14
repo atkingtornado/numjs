@@ -14,18 +14,19 @@ function isFunction (value) {
 
 function baseFlatten (array, isDeep, result) {
   result = result || [];
-  var index = -1;
-  var length = array.length;
-
-  while (++index < length) {
-    var value = array[index];
-    if (isNumber(value)) {
-      result[result.length] = value;
-    } else if (isDeep) {
-      // Recursively flatten arrays (susceptible to call stack limits).
-      baseFlatten(value, isDeep, result);
-    } else {
-      result.push(value);
+  if (Array.isArray(array)) {
+    var index = -1;
+    var length = array.length;
+    while (++index < length) {
+      var value = array[index];
+      if (isNumber(value)) {
+        result[result.length] = value;
+      } else if (isDeep) {
+        // Recursively flatten arrays (susceptible to call stack limits).
+        baseFlatten(value, isDeep, result);
+      } else {
+        result.push(value);
+      }
     }
   }
 
@@ -46,12 +47,15 @@ function getType (dtype) {
 
 function _dim (x) {
   var ret = [];
-  while (typeof x === 'object') { ret.push(x.length); x = x[0]; }
+  while (Array.isArray(x)) { 
+    ret.push(x.length); x = x[0]; 
+  }
   return ret;
 }
 
 function getShape (array) {
   var y, z;
+  
   if (typeof array === 'object') {
     y = array[0];
     if (typeof y === 'object') {
